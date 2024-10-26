@@ -39,8 +39,8 @@
   - 예약 목록 조회
  
 - 숙소 검색
-  - 유형, 위치(시/도), 이름, 편의시설로 검색 가능
-  - 평점, 최신순, 거리순 등으로 정렬 가능
+  - 투숙 날짜, 유형, 위치(시/도), 이름, 편의시설로 검색 가능
+  - 평점, 날짜, 거리, 북마크 수, 리뷰 수 등으로 정렬 가능
  
 - 숙소 북마크 (권한: guest)
   - 북마크, 북마크 취소
@@ -66,5 +66,5 @@
 ---
 
 ### ERD
-![image](https://github.com/user-attachments/assets/505ebad1-38e0-4b12-858d-7f72a2e1aee2)
+![image](https://github.com/user-attachments/assets/b728ff75-4880-4247-913f-020d75a885e9)
 url: https://www.erdcloud.com/d/rSsRvTPJoK67Ltahp
