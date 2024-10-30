@@ -25,7 +25,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 
     String accessToken = jwtTokenProvider.generateAccessToken(user.getId(), user.getUsername(),
         Collections.singleton(user.getRole().name()));
-    String refreshToken = jwtTokenProvider.generateRefreshToken();
+    String refreshToken = jwtTokenProvider.generateRefreshToken(user.getId());
 
     response.setHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + accessToken);
 

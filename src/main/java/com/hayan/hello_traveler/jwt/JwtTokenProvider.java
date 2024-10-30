@@ -2,6 +2,7 @@ package com.hayan.hello_traveler.jwt;
 
 import com.hayan.hello_traveler.common.exception.CustomException;
 import com.hayan.hello_traveler.common.response.ErrorCode;
+import com.hayan.hello_traveler.redis.RedisService;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -15,11 +16,13 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 @Getter
 @Component
+@RequiredArgsConstructor
 public class JwtTokenProvider {
 
   private static final Dotenv dotenv = Dotenv.load();
@@ -29,6 +32,8 @@ public class JwtTokenProvider {
       Objects.requireNonNull(dotenv.get("ACCESS_TOKEN_EXPIRATION_TIME")));
   private final long REFRESH_TOKEN_EXPIRATION_TIME = Long.parseLong(
       Objects.requireNonNull(dotenv.get("REFRESH_TOKEN_EXPIRATION_TIME")));
+
+  private final RedisService redisService;
 
   private Claims getClaimsFromToken(String token) {
     return Jwts.parserBuilder()
@@ -49,12 +54,15 @@ public class JwtTokenProvider {
         .compact();
   }
 
-  public String generateRefreshToken() {
-    return Jwts.builder()
+  public String generateRefreshToken(Long userId) {
+    String refreshToken = Jwts.builder()
         .setIssuedAt(new Date())
         .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION_TIME))
         .signWith(SECRET_KEY)
         .compact();
+
+    redisService.saveRefreshToken(userId, refreshToken, REFRESH_TOKEN_EXPIRATION_TIME);
+    return refreshToken;
   }
 
   public boolean validateToken(String token) {
@@ -95,16 +103,20 @@ public class JwtTokenProvider {
   }
 
   public String refreshAccessToken(String refreshToken) {
-    if (!validateToken(refreshToken)) {
+    Long userId = getUserIdFromToken(refreshToken);
+    String storedRefreshToken = redisService.getRefreshToken(userId);
+    if (storedRefreshToken == null || !storedRefreshToken.equals(refreshToken)) {
       throw new CustomException(ErrorCode.INVALID_TOKEN);
     }
 
-    Claims claims = getClaimsFromToken(refreshToken);
-    Long userId = claims.get("userId", Long.class);
-    String username = claims.getSubject();
+    if (!validateToken(refreshToken)) {
+      throw new CustomException(ErrorCode.EXPIRED_TOKEN);
+    }
+
+    String username = getUsernameFromToken(refreshToken);
 
     @SuppressWarnings("unchecked")
-    Set<String> roles = claims.get("roles", Set.class);
+    Set<String> roles = getClaimsFromToken(refreshToken).get("roles", Set.class);
 
     return generateAccessToken(userId, username, roles);
   }
