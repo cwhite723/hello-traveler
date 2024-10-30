@@ -40,7 +40,8 @@ public class AuthController {
   }
 
   @PostMapping("/refresh-token")
-  public ApplicationResponse<Void> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
+  public ApplicationResponse<Void> refreshAccessToken(HttpServletRequest request,
+      HttpServletResponse response) {
     authService.refreshAccessToken(request, response);
     return ApplicationResponse.noData(SuccessCode.SUCCESS);
   }

@@ -18,4 +18,8 @@ public class CustomException extends RuntimeException {
     this.errorCode = errorCode;
   }
 
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 1cf69b7cf30a06bd0924267b04fb5042846c668d
