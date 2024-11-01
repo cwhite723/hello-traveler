@@ -1,8 +1,10 @@
 package com.hayan.hello_traveler.jwt;
 
+import com.hayan.hello_traveler.auth.domain.dto.response.UserInfo;
 import com.hayan.hello_traveler.common.exception.CustomException;
 import com.hayan.hello_traveler.common.response.ErrorCode;
 import com.hayan.hello_traveler.redis.RedisService;
+import com.hayan.hello_traveler.user.domain.constant.Role;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -43,11 +45,11 @@ public class JwtTokenProvider {
         .getBody();
   }
 
-  public String generateAccessToken(Long userId, String username, Set<String> roles) {
+  public String generateAccessToken(Long userId, String username, Role role) {
     return Jwts.builder()
         .setSubject(username)
         .claim("userId", userId)
-        .claim("roles", roles)
+        .claim("role", role)
         .setIssuedAt(new Date())
         .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION_TIME))
         .signWith(SECRET_KEY)
@@ -102,22 +104,14 @@ public class JwtTokenProvider {
         .collect(Collectors.toSet());
   }
 
-  public String refreshAccessToken(String refreshToken) {
-    Long userId = getUserIdFromToken(refreshToken);
+  public String refreshAccessToken(Long userId, UserInfo user, String refreshToken) {
     String storedRefreshToken = redisService.getRefreshToken(userId);
     if (storedRefreshToken == null || !storedRefreshToken.equals(refreshToken)) {
       throw new CustomException(ErrorCode.INVALID_TOKEN);
     }
-
     if (!validateToken(refreshToken)) {
       throw new CustomException(ErrorCode.EXPIRED_TOKEN);
     }
-
-    String username = getUsernameFromToken(refreshToken);
-
-    @SuppressWarnings("unchecked")
-    Set<String> roles = getClaimsFromToken(refreshToken).get("roles", Set.class);
-
-    return generateAccessToken(userId, username, roles);
+    return generateAccessToken(userId, user.username(), user.role());
   }
 }

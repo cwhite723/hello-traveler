@@ -1,6 +1,7 @@
 package com.hayan.hello_traveler.user.service;
 
 import com.hayan.hello_traveler.auth.domain.dto.request.SignUpRequest;
+import com.hayan.hello_traveler.auth.domain.dto.response.UserInfo;
 import com.hayan.hello_traveler.common.exception.CustomException;
 import com.hayan.hello_traveler.common.response.ErrorCode;
 import com.hayan.hello_traveler.user.domain.User;
@@ -35,6 +36,13 @@ public class UserService {
 
   public User getByUsername(String username) {
     return userRepository.findByUsername(username)
-        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND, username));
+        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+  }
+
+  public UserInfo getUserInfoById(Long userId) {
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+    return new UserInfo(user.getUsername(), user.getRole());
   }
 }

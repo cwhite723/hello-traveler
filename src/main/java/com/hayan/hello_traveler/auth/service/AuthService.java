@@ -2,6 +2,7 @@ package com.hayan.hello_traveler.auth.service;
 
 import com.hayan.hello_traveler.auth.domain.dto.request.SignInRequest;
 import com.hayan.hello_traveler.auth.domain.dto.response.SignInResponse;
+import com.hayan.hello_traveler.auth.domain.dto.response.UserInfo;
 import com.hayan.hello_traveler.common.exception.CustomException;
 import com.hayan.hello_traveler.common.response.ErrorCode;
 import com.hayan.hello_traveler.jwt.JwtTokenProvider;
@@ -42,7 +43,10 @@ public class AuthService {
 
   public void refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
     String refreshToken = jwtTokenProvider.getTokenFromRequest(request);
-    String newAccessToken = jwtTokenProvider.refreshAccessToken(refreshToken);
+    Long userId = jwtTokenProvider.getUserIdFromToken(refreshToken);
+    UserInfo user = userService.getUserInfoById(userId);
+    String newAccessToken = jwtTokenProvider.refreshAccessToken(userId, user, refreshToken);
+
     response.setHeader("Authorization", "Bearer " + newAccessToken);
   }
 }

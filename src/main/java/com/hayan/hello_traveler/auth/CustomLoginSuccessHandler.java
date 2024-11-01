@@ -6,7 +6,6 @@ import com.hayan.hello_traveler.user.domain.User;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -23,8 +22,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
       Authentication authentication) {
     User user = (User) authentication.getPrincipal();
 
-    String accessToken = jwtTokenProvider.generateAccessToken(user.getId(), user.getUsername(),
-        Collections.singleton(user.getRole().name()));
+    String accessToken = jwtTokenProvider.generateAccessToken(user.getId(), user.getUsername(), user.getRole());
     String refreshToken = jwtTokenProvider.generateRefreshToken(user.getId());
 
     response.setHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + accessToken);
