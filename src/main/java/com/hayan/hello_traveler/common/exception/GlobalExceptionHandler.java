@@ -4,19 +4,17 @@ import com.hayan.hello_traveler.common.response.ApplicationResponse;
 import com.hayan.hello_traveler.common.response.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
-  private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
   @ExceptionHandler(CustomException.class)
   public ResponseEntity<ApplicationResponse<Void>> handleCustomException(CustomException e) {
@@ -25,7 +23,7 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(RuntimeException.class)
   public ResponseEntity<ApplicationResponse<Void>> handleUnexpectedException(RuntimeException e) {
-    logger.error("Unexpected Exception: {}", e.getMessage(), e);
+    log.error("Unexpected Exception: {}", e.getMessage(), e);
     return buildErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR, e.getMessage());
   }
 
@@ -35,14 +33,14 @@ public class GlobalExceptionHandler {
     String errorMessage = e.getBindingResult().getAllErrors().stream()
         .map(DefaultMessageSourceResolvable::getDefaultMessage)
         .collect(Collectors.joining(", "));
-    logger.error("Validation Error: {}, Request URI: {}", errorMessage, request.getRequestURI());
+    log.error("Validation Error: {}, Request URI: {}", errorMessage, request.getRequestURI());
     return buildErrorResponse(ErrorCode.REQUEST_VALIDATION_FAIL, errorMessage);
   }
 
   @ExceptionHandler(ConstraintViolationException.class)
   public ResponseEntity<ApplicationResponse<Void>> handleConstraintViolationException(
       HttpServletRequest request, ConstraintViolationException e) {
-    logger.error("ConstraintViolationException: {}, Request URI: {}", e.getMessage(),
+    log.error("ConstraintViolationException: {}, Request URI: {}", e.getMessage(),
         request.getRequestURI());
     return buildErrorResponse(ErrorCode.REQUEST_VALIDATION_FAIL, e.getMessage());
   }
