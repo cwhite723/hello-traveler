@@ -28,11 +28,11 @@ import org.springframework.stereotype.Component;
 public class JwtTokenProvider {
 
   private static final Dotenv dotenv = Dotenv.load();
-  private final Key SECRET_KEY = Keys.hmacShaKeyFor(
+  private static final Key SECRET_KEY = Keys.hmacShaKeyFor(
       Decoders.BASE64.decode(dotenv.get("JWT_SECRET_KEY")));
-  private final long ACCESS_TOKEN_EXPIRATION_TIME = Long.parseLong(
+  private static final long ACCESS_TOKEN_EXPIRATION_TIME = Long.parseLong(
       Objects.requireNonNull(dotenv.get("ACCESS_TOKEN_EXPIRATION_TIME")));
-  private final long REFRESH_TOKEN_EXPIRATION_TIME = Long.parseLong(
+  private static final long REFRESH_TOKEN_EXPIRATION_TIME = Long.parseLong(
       Objects.requireNonNull(dotenv.get("REFRESH_TOKEN_EXPIRATION_TIME")));
 
   private final RedisService redisService;

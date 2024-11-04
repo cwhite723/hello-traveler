@@ -16,14 +16,17 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
   private final AuthenticationManager authenticationManager;
+  private final ObjectMapper objectMapper;
 
   @Override
   public Authentication attemptAuthentication(HttpServletRequest request,
       HttpServletResponse response) throws AuthenticationException {
     try {
-      SignInRequest signInRequest = new ObjectMapper().readValue(request.getInputStream(), SignInRequest.class);
+      SignInRequest signInRequest = objectMapper.readValue(request.getInputStream(),
+          SignInRequest.class);
       UsernamePasswordAuthenticationToken authToken =
-          new UsernamePasswordAuthenticationToken(signInRequest.username(), signInRequest.password());
+          new UsernamePasswordAuthenticationToken(signInRequest.username(),
+              signInRequest.password());
 
       return authenticationManager.authenticate(authToken);
     } catch (IOException e) {

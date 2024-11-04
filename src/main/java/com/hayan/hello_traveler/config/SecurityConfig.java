@@ -1,5 +1,6 @@
 package com.hayan.hello_traveler.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hayan.hello_traveler.auth.CustomAuthenticationFilter;
 import com.hayan.hello_traveler.auth.CustomLoginSuccessHandler;
 import com.hayan.hello_traveler.jwt.JwtAuthenticationFilter;
@@ -25,12 +26,13 @@ public class SecurityConfig {
   private final CustomLoginSuccessHandler customLoginSuccessHandler;
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
   private final AuthenticationConfiguration authenticationConfiguration;
+  private final ObjectMapper objectMapper;
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
     CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(
-        authenticationManager(authenticationConfiguration)
+        authenticationManager(authenticationConfiguration), objectMapper
     );
     customAuthenticationFilter.setFilterProcessesUrl("/api/auth/sign-in");
     customAuthenticationFilter.setAuthenticationSuccessHandler(customLoginSuccessHandler);

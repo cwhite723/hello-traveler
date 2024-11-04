@@ -4,6 +4,8 @@ import com.hayan.hello_traveler.auth.domain.dto.request.SignUpRequest;
 import com.hayan.hello_traveler.auth.domain.dto.response.UserInfo;
 import com.hayan.hello_traveler.common.exception.CustomException;
 import com.hayan.hello_traveler.common.response.ErrorCode;
+import com.hayan.hello_traveler.user.domain.Guest;
+import com.hayan.hello_traveler.user.domain.Host;
 import com.hayan.hello_traveler.user.domain.User;
 import com.hayan.hello_traveler.user.repository.UserRepository;
 import com.hayan.hello_traveler.user.service.factory.UserFactory;
@@ -32,6 +34,21 @@ public class UserService {
 
     User user = userFactory.createUser(request, passwordEncoder.encode(request.password()));
     userRepository.save(user);
+  }
+
+  public String getUserType(User user) {
+    if (user instanceof Host) {
+      return "host";
+    } else if (user instanceof Guest) {
+      return "guest";
+    } else {
+      throw new CustomException(ErrorCode.INVALID_USER_TYPE);
+    }
+  }
+
+  public User getById(Long id) {
+    return userRepository.findById(id)
+        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
   }
 
   public User getByUsername(String username) {
