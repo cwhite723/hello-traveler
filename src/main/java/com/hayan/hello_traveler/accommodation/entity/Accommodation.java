@@ -1,13 +1,21 @@
 package com.hayan.hello_traveler.accommodation.entity;
 
 import com.hayan.hello_traveler.accommodation.entity.constant.Type;
+import com.hayan.hello_traveler.accommodation.entity.dto.AccommodationRequest;
 import com.hayan.hello_traveler.common.entity.BaseEntity;
+import com.hayan.hello_traveler.user.domain.Host;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +23,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @Entity
@@ -23,6 +32,7 @@ import lombok.NoArgsConstructor;
         @UniqueConstraint(columnNames = {"name", "address"})
     })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLRestriction("deleted_at IS NULL")
 public class Accommodation extends BaseEntity {
 
   @Column(nullable = false)
@@ -46,6 +56,7 @@ public class Accommodation extends BaseEntity {
   @Column(nullable = false)
   private double longitude;
 
+  @Enumerated(EnumType.STRING)
   private Type type;
 
   private String description;
@@ -66,7 +77,14 @@ public class Accommodation extends BaseEntity {
   private int bookmarkCount;
 
   @Column(name = "deleted_at")
-  private boolean deletedAt;
+  private LocalDateTime deletedAt;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "host_id", nullable = false)
+  private Host host;
+
+  @OneToMany(mappedBy = "accommodation", cascade = CascadeType.PERSIST)
+  private final List<Room> rooms = new ArrayList<>();
 
   @OneToMany(mappedBy = "accommodation", cascade = CascadeType.PERSIST)
   private final List<AccommodationAmenity> accommodationAmenities = new ArrayList<>();
@@ -74,7 +92,7 @@ public class Accommodation extends BaseEntity {
   @Builder
   public Accommodation(String name, String contact, String address, String city, String district,
       double latitude, double longitude, Type type, String description,
-      LocalTime checkinTime, LocalTime checkoutTime) {
+      LocalTime checkinTime, LocalTime checkoutTime, Host host) {
     this.name = name;
     this.contact = contact;
     this.address = address;
@@ -86,5 +104,24 @@ public class Accommodation extends BaseEntity {
     this.description = description;
     this.checkinTime = checkinTime;
     this.checkoutTime = checkoutTime;
+    this.host = host;
+  }
+
+  public void update(AccommodationRequest request) {
+    this.name = request.name();
+    this.contact = request.contact();
+    this.address = request.address();
+    this.city = request.city();
+    this.district = request.district();
+    this.latitude = request.latitude();
+    this.longitude = request.longitude();
+    this.type = request.type();
+    this.description = request.description();
+    this.checkinTime = request.checkinTime();
+    this.checkoutTime = request.checkoutTime();
+  }
+
+  public void delete() {
+    this.deletedAt = LocalDateTime.now();
   }
 }

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 
   private final JwtTokenProvider jwtTokenProvider;
+  private final JwtProperties jwtProperties;
 
   @Override
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -31,7 +32,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
     refreshTokenCookie.setHttpOnly(true);
     refreshTokenCookie.setPath("/");
     refreshTokenCookie.setMaxAge(
-        (int) jwtTokenProvider.getREFRESH_TOKEN_EXPIRATION_TIME() / 1000);
+        (int) jwtProperties.getRefreshTokenExpirationTime() / 1000);
 
     response.addCookie(refreshTokenCookie);
   }

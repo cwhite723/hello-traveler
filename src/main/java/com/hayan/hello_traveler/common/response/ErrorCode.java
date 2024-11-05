@@ -18,13 +18,16 @@ public enum ErrorCode {
   UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "401", "인증에 실패했습니다."),
   INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "401", "유효하지 않는 토큰입니다."),
   EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "401", "만료된 토큰입니다."),
+  NOT_HOST(HttpStatus.UNAUTHORIZED, "401", "호스트가 아닙니다."),
 
   // 403 Forbidden
 
   // 404 Not Found
   USER_NOT_FOUND(NOT_FOUND, "404", "회원이 존재하지 않습니다."),
+  ACCOMMODATION_NOT_FOUND(NOT_FOUND, "404", "숙소가 존재하지 않습니다."),
 
   // 409 Conflict
+
 
   // 500
   INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "500", "서버 내부 오류입니다.");
