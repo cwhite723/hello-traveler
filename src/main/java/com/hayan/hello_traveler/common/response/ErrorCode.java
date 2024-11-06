@@ -25,6 +25,8 @@ public enum ErrorCode {
   // 404 Not Found
   USER_NOT_FOUND(NOT_FOUND, "404", "회원이 존재하지 않습니다."),
   ACCOMMODATION_NOT_FOUND(NOT_FOUND, "404", "숙소가 존재하지 않습니다."),
+  AMENITY_NOT_FOUND(NOT_FOUND, "404", "편의시설이 존재하지 않습니다."),
+  ROOM_NOT_FOUND(NOT_FOUND, "404", "방이 존재하지 않습니다."),
 
   // 409 Conflict
 
