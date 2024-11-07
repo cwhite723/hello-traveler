@@ -5,7 +5,9 @@ import com.hayan.hello_traveler.accommodation.entity.dto.AccommodationRequest;
 import com.hayan.hello_traveler.common.entity.BaseEntity;
 import com.hayan.hello_traveler.user.domain.Host;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -15,6 +17,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -67,6 +70,12 @@ public class Accommodation extends BaseEntity {
   @Column(name = "checkout_time")
   private LocalTime checkoutTime;
 
+  @Column(name = "day_off")
+  @ElementCollection(targetClass = DayOfWeek.class)
+  @CollectionTable(name = "accommodation_day_off", joinColumns = @JoinColumn(name = "accommodation_id"))
+  @Enumerated(EnumType.STRING)
+  private List<DayOfWeek> dayOff = new ArrayList<>();
+
   @Column(name = "rating_average")
   private double ratingAverage;
 
@@ -92,7 +101,7 @@ public class Accommodation extends BaseEntity {
   @Builder
   public Accommodation(String name, String contact, String address, String city, String district,
       double latitude, double longitude, Type type, String description,
-      LocalTime checkinTime, LocalTime checkoutTime, Host host) {
+      LocalTime checkinTime, LocalTime checkoutTime, List<DayOfWeek> dayOff, Host host) {
     this.name = name;
     this.contact = contact;
     this.address = address;
@@ -104,6 +113,7 @@ public class Accommodation extends BaseEntity {
     this.description = description;
     this.checkinTime = checkinTime;
     this.checkoutTime = checkoutTime;
+    this.dayOff = dayOff;
     this.host = host;
   }
 
@@ -119,6 +129,7 @@ public class Accommodation extends BaseEntity {
     this.description = request.description();
     this.checkinTime = request.checkinTime();
     this.checkoutTime = request.checkoutTime();
+    this.dayOff = request.dayOff();
   }
 
   public void delete() {

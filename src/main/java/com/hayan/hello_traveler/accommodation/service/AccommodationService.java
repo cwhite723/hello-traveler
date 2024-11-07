@@ -75,7 +75,7 @@ public class AccommodationService {
 
   public void validateHost(Long loginId, Accommodation accommodation) {
     if (!accommodation.getHost().getId().equals(loginId)) {
-      throw new CustomException(ErrorCode.NOT_HOST);
+      throw new CustomException(ErrorCode.HOST_NOT_MATCH);
     }
   }
 }

@@ -1,14 +1,12 @@
 package com.hayan.hello_traveler.accommodation.controller;
 
-import static com.hayan.hello_traveler.common.response.SuccessCode.*;
+import static com.hayan.hello_traveler.common.response.SuccessCode.SUCCESS;
 
 import com.hayan.hello_traveler.accommodation.entity.dto.RoomRequest;
 import com.hayan.hello_traveler.accommodation.service.RoomService;
 import com.hayan.hello_traveler.common.annotation.LoginCheck;
 import com.hayan.hello_traveler.common.annotation.LoginHostId;
 import com.hayan.hello_traveler.common.response.ApplicationResponse;
-import com.hayan.hello_traveler.common.response.SuccessCode;
-import com.hayan.hello_traveler.user.service.factory.HostFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -23,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/accommodation/room")
 public class RoomController {
   private final RoomService roomService;
-  private final HostFactory host;
 
   @LoginCheck
   @PostMapping("/{accommodation-id}")

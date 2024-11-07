@@ -3,12 +3,16 @@ package com.hayan.hello_traveler.accommodation.entity;
 import com.hayan.hello_traveler.accommodation.entity.dto.RoomRequest;
 import com.hayan.hello_traveler.common.entity.BaseIdEntity;
 import com.hayan.hello_traveler.user.domain.constant.Gender;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,6 +41,9 @@ public class Room extends BaseIdEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "accommodation_id", nullable = false)
   private Accommodation accommodation;
+
+  @OneToMany(mappedBy = "room", cascade = CascadeType.PERSIST)
+  private final List<DailyRoomStock> dailyRoomStocks = new ArrayList<>();
 
   public void update(RoomRequest request) {
     this.name = request.name();
