@@ -5,16 +5,11 @@ import com.hayan.hello_traveler.common.exception.CustomException;
 import com.hayan.hello_traveler.common.response.ErrorCode;
 import com.hayan.hello_traveler.redis.RedisService;
 import com.hayan.hello_traveler.user.domain.constant.Role;
-import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
-import java.security.Key;
 import java.util.Date;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Getter;
@@ -27,19 +22,12 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 
-  private static final Dotenv dotenv = Dotenv.load();
-  private static final Key SECRET_KEY = Keys.hmacShaKeyFor(
-      Decoders.BASE64.decode(dotenv.get("JWT_SECRET_KEY")));
-  private static final long ACCESS_TOKEN_EXPIRATION_TIME = Long.parseLong(
-      Objects.requireNonNull(dotenv.get("ACCESS_TOKEN_EXPIRATION_TIME")));
-  private static final long REFRESH_TOKEN_EXPIRATION_TIME = Long.parseLong(
-      Objects.requireNonNull(dotenv.get("REFRESH_TOKEN_EXPIRATION_TIME")));
-
+  private final JwtProperties jwtProperties;
   private final RedisService redisService;
 
   private Claims getClaimsFromToken(String token) {
     return Jwts.parserBuilder()
-        .setSigningKey(SECRET_KEY)
+        .setSigningKey(jwtProperties.secretKey)
         .build()
         .parseClaimsJws(token)
         .getBody();
@@ -51,19 +39,22 @@ public class JwtTokenProvider {
         .claim("userId", userId)
         .claim("role", role)
         .setIssuedAt(new Date())
-        .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION_TIME))
-        .signWith(SECRET_KEY)
+        .setExpiration(
+            new Date(System.currentTimeMillis() + jwtProperties.getAccessTokenExpirationTime()))
+        .signWith(jwtProperties.secretKey)
         .compact();
   }
 
   public String generateRefreshToken(Long userId) {
     String refreshToken = Jwts.builder()
         .setIssuedAt(new Date())
-        .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION_TIME))
-        .signWith(SECRET_KEY)
+        .setExpiration(
+            new Date(System.currentTimeMillis() + jwtProperties.getAccessTokenExpirationTime()))
+        .signWith(jwtProperties.secretKey)
         .compact();
 
-    redisService.saveRefreshToken(userId, refreshToken, REFRESH_TOKEN_EXPIRATION_TIME);
+    redisService.saveRefreshToken(userId, refreshToken,
+        jwtProperties.getRefreshTokenExpirationTime());
     return refreshToken;
   }
 
@@ -98,10 +89,8 @@ public class JwtTokenProvider {
   public Set<SimpleGrantedAuthority> getAuthoritiesFromToken(String token) {
     Claims claims = getClaimsFromToken(token);
     @SuppressWarnings("unchecked")
-    Set<String> roles = claims.get("roles", Set.class);
-    return roles.stream()
-        .map(SimpleGrantedAuthority::new)
-        .collect(Collectors.toSet());
+    String role = claims.get("role", String.class);
+    return Set.of(new SimpleGrantedAuthority(role));
   }
 
   public String refreshAccessToken(Long userId, UserInfo user, String refreshToken) {
