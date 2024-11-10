@@ -5,9 +5,15 @@ import com.hayan.hello_traveler.common.exception.CustomException;
 import com.hayan.hello_traveler.common.response.ErrorCode;
 import com.hayan.hello_traveler.reservation.entity.Reservation;
 import com.hayan.hello_traveler.reservation.entity.Review;
+import com.hayan.hello_traveler.reservation.entity.ReviewTag;
+import com.hayan.hello_traveler.reservation.entity.Tag;
 import com.hayan.hello_traveler.reservation.entity.constant.Status;
 import com.hayan.hello_traveler.reservation.entity.dto.ReviewRequest;
 import com.hayan.hello_traveler.reservation.repository.ReviewRepository;
+import com.hayan.hello_traveler.reservation.repository.ReviewTagRepository;
+import com.hayan.hello_traveler.reservation.repository.TagRepository;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +26,8 @@ public class ReviewService {
   private final ReservationService reservationService;
 
   private final ReviewRepository reviewRepository;
+  private final ReviewTagRepository reviewTagRepository;
+  private final TagRepository tagRepository;
 
   @Transactional
   public Long save(Long guestId, Long reservationId, ReviewRequest request) {
@@ -31,8 +39,22 @@ public class ReviewService {
     Review review = request.toEntity(reservation, accommodation);
     reviewRepository.save(review);
     accommodation.addReview(request.starRating());
+    saveTags(review, request.tagIds());
 
     return review.getId();
+  }
+
+  private void saveTags(Review review, List<Long> tagIds) {
+    List<Tag> tags = tagRepository.findAllById(tagIds);
+    if (tags.size() != tagIds.size()) {
+      throw new CustomException(ErrorCode.TAG_NOT_FOUND);
+    }
+
+    List<ReviewTag> reviewTags = tags.stream()
+        .map(tag -> new ReviewTag(review, tag))
+        .collect(Collectors.toList());
+
+    reviewTagRepository.saveAll(reviewTags);
   }
 
   @Transactional

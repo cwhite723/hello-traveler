@@ -80,12 +80,6 @@ public class Accommodation extends BaseEntity {
   @Column(name = "total_rating_score")
   private int totalRatingScore;
 
-  @Column(name = "review_count")
-  private int reviewCount;
-
-  @Column(name = "bookmark_count")
-  private int bookmarkCount;
-
   @Column(name = "deleted_at")
   private LocalDateTime deletedAt;
 
@@ -101,6 +95,9 @@ public class Accommodation extends BaseEntity {
 
   @OneToMany(mappedBy = "accommodation", cascade = CascadeType.PERSIST)
   private final List<Review> reviews = new ArrayList<>();
+
+  @OneToMany(mappedBy = "accommodation", cascade = CascadeType.PERSIST)
+  private List<Bookmark> bookmarks = new ArrayList<>();
 
   @Builder
   public Accommodation(String name, String contact, String address, String city, String district,
@@ -141,11 +138,10 @@ public class Accommodation extends BaseEntity {
   }
 
   public double calculateAverageRating() {
-    return reviewCount > 0 ? (double) totalRatingScore / reviewCount : 0.0;
+    return !reviews.isEmpty() ? (double) totalRatingScore / reviews.size() : 0.0;
   }
 
   public void addReview(int rating) {
-    reviewCount++;
     totalRatingScore += rating;
   }
 
@@ -154,7 +150,6 @@ public class Accommodation extends BaseEntity {
   }
 
   public void removeReview(int rating) {
-    reviewCount--;
     totalRatingScore -= rating;
   }
 }

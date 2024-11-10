@@ -19,3 +19,16 @@ INSERT INTO amenities (id, type) VALUES (18, '바비큐');
 INSERT INTO amenities (id, type) VALUES (19, '조식');
 INSERT INTO amenities (id, type) VALUES (20, '픽업');
 INSERT INTO amenities (id, type) VALUES (21, '짐 보관');
+
+INSERT INTO tags (id, name, category) VALUES (1, '침대가 편안해요', 'INDOOR');
+INSERT INTO tags (id, name, category) VALUES (2, '침구 상태가 좋아요', 'INDOOR');
+INSERT INTO tags (id, name, category) VALUES (3, '조식이 맛있어요', 'INDOOR');
+INSERT INTO tags (id, name, category) VALUES (4, '인테리어가 멋져요', 'INDOOR');
+INSERT INTO tags (id, name, category) VALUES (5, '깨끗해요', 'INDOOR');
+INSERT INTO tags (id, name, category) VALUES (6, '조용해요', 'AMBIENCE');
+INSERT INTO tags (id, name, category) VALUES (7, '파티가 재미있어요', 'AMBIENCE');
+INSERT INTO tags (id, name, category) VALUES (8, '바다가 잘 보여요', 'AMBIENCE');
+INSERT INTO tags (id, name, category) VALUES (9, '뷰가 예뻐요', 'AMBIENCE');
+INSERT INTO tags (id, name, category) VALUES (10, '사장님이 친절해요', 'HOST');
+INSERT INTO tags (id, name, category) VALUES (11, '숙소까지 픽업을 해줘요', 'HOST');
+INSERT INTO tags (id, name, category) VALUES (12, '짐 보관이 가능해요', 'OTHER');

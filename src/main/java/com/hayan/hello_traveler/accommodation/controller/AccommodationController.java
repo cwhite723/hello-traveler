@@ -5,6 +5,7 @@ import static com.hayan.hello_traveler.common.response.SuccessCode.SUCCESS;
 import com.hayan.hello_traveler.accommodation.entity.dto.AccommodationRequest;
 import com.hayan.hello_traveler.accommodation.service.AccommodationService;
 import com.hayan.hello_traveler.common.annotation.LoginCheck;
+import com.hayan.hello_traveler.common.annotation.LoginGuestId;
 import com.hayan.hello_traveler.common.annotation.LoginHostId;
 import com.hayan.hello_traveler.common.response.ApplicationResponse;
 import java.util.List;
@@ -58,6 +59,15 @@ public class AccommodationController {
   public ApplicationResponse<Void> delete(@LoginHostId Long hostId,
       @PathVariable("accommodation-id") Long accommodationId) {
     accommodationService.delete(hostId, accommodationId);
+
+    return ApplicationResponse.noData(SUCCESS);
+  }
+
+  @LoginCheck
+  @PostMapping("/bookmark/{accommodation-id}")
+  public ApplicationResponse<Void> bookmark(@LoginGuestId Long guestId,
+      @PathVariable("accommodation-id") Long accommodationId) {
+    accommodationService.toggleBookmark(guestId, accommodationId);
 
     return ApplicationResponse.noData(SUCCESS);
   }

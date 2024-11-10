@@ -10,6 +10,12 @@ import java.time.LocalDate;
 public record ReservationRequest(LocalDate checkinDate,
                                  LocalDate checkoutDate) {
 
+  public ReservationRequest {
+    if (!checkinDate.isBefore(checkoutDate)) {
+      throw new IllegalArgumentException("체크인 날짜는 체크아웃 날짜 이전이어야 합니다.");
+    }
+  }
+
   public Reservation toEntity(Host host, Guest guest, Room room) {
     return Reservation.builder()
         .checkinDate(checkinDate)

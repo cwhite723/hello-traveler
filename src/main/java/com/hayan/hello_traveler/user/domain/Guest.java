@@ -1,5 +1,6 @@
 package com.hayan.hello_traveler.user.domain;
 
+import com.hayan.hello_traveler.accommodation.entity.Bookmark;
 import com.hayan.hello_traveler.reservation.entity.Reservation;
 import com.hayan.hello_traveler.user.domain.constant.Gender;
 import com.hayan.hello_traveler.user.domain.constant.Role;
@@ -23,6 +24,9 @@ public class Guest extends User {
 
   @OneToMany(mappedBy = "guest", cascade = CascadeType.PERSIST)
   private List<Reservation> reservations = new ArrayList<>();
+
+  @OneToMany(mappedBy = "guest", cascade = CascadeType.PERSIST)
+  private List<Bookmark> bookmarks = new ArrayList<>();
 
   @Builder
   public Guest(String name, String password, String contact, String username,

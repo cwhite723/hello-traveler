@@ -3,13 +3,17 @@ package com.hayan.hello_traveler.reservation.entity;
 import com.hayan.hello_traveler.accommodation.entity.Accommodation;
 import com.hayan.hello_traveler.common.entity.BaseEntity;
 import com.hayan.hello_traveler.reservation.entity.dto.ReviewRequest;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -37,6 +41,9 @@ public class Review extends BaseEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "accommodation_id", nullable = false)
   private Accommodation accommodation;
+
+  @OneToMany(mappedBy = "review", cascade = CascadeType.PERSIST)
+  private final List<ReviewTag> reviewTags = new ArrayList<>();
 
   public void update(ReviewRequest request) {
     this.content = request.content();

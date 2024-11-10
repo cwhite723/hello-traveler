@@ -33,6 +33,7 @@ public enum ErrorCode {
   ROOM_NOT_FOUND(NOT_FOUND, "404", "방이 존재하지 않습니다."),
   RESERVATION_NOT_FOUND(NOT_FOUND, "404", "예약이 존재하지 않습니다."),
   REVIEW_NOT_FOUND(NOT_FOUND, "404", "리뷰가 존재하지 않습니다."),
+  TAG_NOT_FOUND(NOT_FOUND, "404", "태그가 존재하지 않습니다."),
 
   // 409 Conflict
   RESERVATION_CLOSED(CONFLICT, "409", "예약이 마감되었습니다."),
