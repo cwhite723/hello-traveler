@@ -3,6 +3,7 @@ package com.hayan.hello_traveler.accommodation.entity;
 import com.hayan.hello_traveler.accommodation.entity.constant.Type;
 import com.hayan.hello_traveler.accommodation.entity.dto.AccommodationRequest;
 import com.hayan.hello_traveler.common.entity.BaseEntity;
+import com.hayan.hello_traveler.reservation.entity.Review;
 import com.hayan.hello_traveler.user.domain.Host;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
@@ -76,8 +77,8 @@ public class Accommodation extends BaseEntity {
   @Enumerated(EnumType.STRING)
   private List<DayOfWeek> dayOff = new ArrayList<>();
 
-  @Column(name = "rating_average")
-  private double ratingAverage;
+  @Column(name = "total_rating_score")
+  private int totalRatingScore;
 
   @Column(name = "review_count")
   private int reviewCount;
@@ -97,6 +98,9 @@ public class Accommodation extends BaseEntity {
 
   @OneToMany(mappedBy = "accommodation", cascade = CascadeType.PERSIST)
   private final List<AccommodationAmenity> accommodationAmenities = new ArrayList<>();
+
+  @OneToMany(mappedBy = "accommodation", cascade = CascadeType.PERSIST)
+  private final List<Review> reviews = new ArrayList<>();
 
   @Builder
   public Accommodation(String name, String contact, String address, String city, String district,
@@ -134,5 +138,23 @@ public class Accommodation extends BaseEntity {
 
   public void delete() {
     this.deletedAt = LocalDateTime.now();
+  }
+
+  public double calculateAverageRating() {
+    return reviewCount > 0 ? (double) totalRatingScore / reviewCount : 0.0;
+  }
+
+  public void addReview(int rating) {
+    reviewCount++;
+    totalRatingScore += rating;
+  }
+
+  public void updateReview(int oldRating, int newRating) {
+    totalRatingScore = totalRatingScore - oldRating + newRating;
+  }
+
+  public void removeReview(int rating) {
+    reviewCount--;
+    totalRatingScore -= rating;
   }
 }

@@ -9,6 +9,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 import lombok.AccessLevel;
@@ -42,6 +43,9 @@ public class Reservation extends BaseIdEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "room_id", nullable = false)
   private Room room;
+
+  @OneToOne(fetch = FetchType.LAZY, mappedBy = "reservation")
+  private Review review;
 
   private void changeStatus(Status newStatus) {
 

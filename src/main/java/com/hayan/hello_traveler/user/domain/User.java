@@ -1,6 +1,6 @@
 package com.hayan.hello_traveler.user.domain;
 
-import com.hayan.hello_traveler.common.domain.BaseEntity;
+import com.hayan.hello_traveler.common.entity.BaseEntity;
 import com.hayan.hello_traveler.user.domain.constant.Gender;
 import com.hayan.hello_traveler.user.domain.constant.Role;
 import jakarta.persistence.Column;
